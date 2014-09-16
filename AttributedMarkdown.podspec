@@ -12,4 +12,5 @@ Pod::Spec.new do |s|
   s.public_header_files = '*.h'
   s.preserve_path = "utility_functions.m", "parsing_functions.m"
   s.frameworks = 'CoreText', 'UIKit', 'Foundation'
+  s.requires_arc = false
 end
