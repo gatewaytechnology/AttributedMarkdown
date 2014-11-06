@@ -4,12 +4,13 @@
 #import <CoreText/CoreText.h>
 
 enum markdown_extensions {
-	EXT_NONE             = 0x00,
-	EXT_SMART            = 0x01,
-	EXT_NOTES            = 0x02,
-	EXT_FILTER_HTML      = 0x04,
-	EXT_FILTER_STYLES    = 0x08,
-	EXT_ALL              = 0xFF
+    EXT_NONE              = 0x00,
+    EXT_SMART             = 0x01,
+    EXT_NOTES             = 0x02,
+    EXT_FILTER_HTML       = 0x04,
+    EXT_FILTER_STYLES     = 0x08,
+    EXT_STRIP_IMAGE_LINKS = 0x10,
+    EXT_ALL               = 0xFF
 };
 
 enum markdown_formats {

@@ -85,7 +85,7 @@ static element * process_raw_blocks(element *input, int extensions, element *ref
     return input;
 }
 
-/* when image linkes are the only element in a paragraph, remove that paragraph so that an empty paragraph isn't shown*/
+/* when image links are the only element in a paragraph, remove that paragraph so that an empty paragraph isn't shown*/
 static element * strip_images(element *input, int extensions, element *references, element *notes){
     element *current = NULL;
     element *last = NULL;
@@ -130,8 +130,10 @@ NSMutableAttributedString* markdown_to_attr_string(NSString *text, int extension
     element *notes = parse_notes(formatted_text, extensions, references);
     element *result = parse_markdown(formatted_text, extensions, references, notes);
     result = process_raw_blocks(result, extensions, references, notes);
-    result = strip_images(result, extensions, references, notes);
-    
+    if (extensions & EXT_STRIP_IMAGE_LINKS)
+    {
+        result = strip_images(result, extensions, references, notes);
+    }
     [out beginEditing];
     
     NSDictionary *_attributes[] = {
