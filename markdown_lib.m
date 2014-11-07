@@ -85,6 +85,42 @@ static element * process_raw_blocks(element *input, int extensions, element *ref
     return input;
 }
 
+/* when image links are the only element in a paragraph, remove that paragraph so that an empty paragraph isn't shown*/
+static element * strip_images(element *input, int extensions, element *references, element *notes){
+    element *current = NULL;
+    element *last = NULL;
+    element *next = NULL;
+    current = input;
+    
+    while (current != NULL) {
+        if (current->key == PARA &&
+            current->children->key == LINK &&
+            current->children->contents.link->label->key == IMAGE &&
+            current->children->next == NULL) {
+            next = current->next;
+            if (last != NULL)
+            {
+                last->next = next;
+            }
+            current->next = NULL;
+            /*This is commented out because it causes a crash that should be handled later.
+             Without freeing the element it results in a small memory leak.
+             There is a task in pivotal to come back and fix this.*/
+            //            free_element_list(current);
+            current = next;
+        }
+        else
+        {
+            if (current->children != NULL) {
+                current->children = strip_images(current->children, extensions, references, notes);
+            }
+            last = current;
+            current = current->next;
+        }
+    }
+    return input;
+}
+
 NSMutableAttributedString* markdown_to_attr_string(NSString *text, int extensions, NSDictionary* attributes) {
     NSMutableAttributedString *out = [[[NSMutableAttributedString alloc] init] autorelease];
     
@@ -94,7 +130,10 @@ NSMutableAttributedString* markdown_to_attr_string(NSString *text, int extension
     element *notes = parse_notes(formatted_text, extensions, references);
     element *result = parse_markdown(formatted_text, extensions, references, notes);
     result = process_raw_blocks(result, extensions, references, notes);
-    
+    if (extensions & EXT_STRIP_IMAGE_LINKS)
+    {
+        result = strip_images(result, extensions, references, notes);
+    }
     [out beginEditing];
     
     NSDictionary *_attributes[] = {
